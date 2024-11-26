@@ -1,0 +1,9 @@
+# Pastas de build e cache
+node_modules/
+platforms/
+www/
+android/
+ios/
+
+# Arquivos de ambiente
+.env
