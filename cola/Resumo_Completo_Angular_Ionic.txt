@@ -1,0 +1,258 @@
+Resumo de Angular e Ionic
+1. O que são componentes Angular (criação e uso)
+Básico
+Componentes são blocos fundamentais no Angular que controlam uma parte específica da interface do usuário.
+Código:
+ng generate component header
+# Local: src/app/header
+Uso:
+<app-header></app-header>
+
+
+Médio
+Criar um componente reutilizável com Input para aceitar dados externos.
+Código:
+@Component({
+  selector: 'app-card',
+  template: `<div>{{ title }}</div>`
+})
+export class CardComponent {
+  @Input() title: string;
+}
+Uso:
+<app-card [title]="'Meu Título'"></app-card>
+
+
+Avançado
+Componentes com EventEmitter para comunicação entre pai e filho.
+Código:
+@Component({
+  selector: 'app-child',
+  template: `<button (click)="sendData()">Enviar</button>`
+})
+export class ChildComponent {
+  @Output() dataSent = new EventEmitter<string>();
+  sendData() {
+    this.dataSent.emit('Olá Pai!');
+  }
+}
+Uso:
+<app-child (dataSent)="onData($event)"></app-child>
+
+
+2. O que são serviços (criação e uso)
+Básico
+Serviços fornecem lógica ou dados que podem ser reutilizados por vários componentes.
+Código:
+ng generate service message
+# Local: src/app/message.service.ts
+Uso:
+export class MessageService {
+  getMessage() {
+    return 'Olá do Serviço!';
+  }
+}
+# Injetar no componente:
+constructor(private messageService: MessageService) {}
+
+
+Médio
+Criar um serviço com HttpClient para fazer uma requisição REST.
+Código:
+getUsers(): Observable<any> {
+  return this.http.get('https://jsonplaceholder.typicode.com/users');
+}
+Uso:
+No componente, chamar o método: this.service.getUsers().subscribe(...)
+
+
+Avançado
+Criar serviços com interceptores para manipular todas as requisições HTTP.
+Código:
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
+    const tokenReq = req.clone({
+      setHeaders: { Authorization: 'Bearer token' }
+    });
+    return next.handle(tokenReq);
+  }
+}
+Uso:
+Configurar no módulo: { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+
+
+3. Uso de grids com Ionic
+Básico
+Criar um layout simples com 2 colunas iguais.
+Código:
+<ion-grid>
+  <ion-row>
+    <ion-col>Coluna 1</ion-col>
+    <ion-col>Coluna 2</ion-col>
+  </ion-row>
+</ion-grid>
+Uso:
+Local: src/app/<pagina>.html
+
+
+Médio
+Criar um layout com diferentes tamanhos de colunas.
+Código:
+<ion-row>
+  <ion-col size="6">50%</ion-col>
+  <ion-col size="3">25%</ion-col>
+  <ion-col size="3">25%</ion-col>
+</ion-row>
+Uso:
+Local: src/app/<pagina>.html
+
+
+Avançado
+Criar grids responsivos.
+Código:
+<ion-col size="12" size-md="6">Responsivo</ion-col>
+Uso:
+Local: src/app/<pagina>.html
+
+
+4. Como utilizar componentes em páginas
+Básico
+Usar componentes diretamente no HTML da página.
+Código:
+<app-header></app-header>
+Uso:
+Local: src/app/<pagina>.html
+
+
+Médio
+Passar propriedades para personalizar o comportamento do componente.
+Código:
+<app-header [title]="'Minha Página'"></app-header>
+Uso:
+Local: src/app/<pagina>.html
+
+
+Avançado
+Usar componentes dinâmicos com Angular ComponentFactoryResolver.
+Código:
+const factory = this.resolver.resolveComponentFactory(DynamicComponent);
+this.container.createComponent(factory);
+Uso:
+Local: src/app/<pagina>.ts
+
+
+5. Como atender a eventos com Angular
+Básico
+Atender a eventos de clique.
+Código:
+<button (click)="onClick()">Clique</button>
+Uso:
+Local: src/app/<pagina>.html e src/app/<pagina>.ts
+
+
+Médio
+Atender a eventos personalizados.
+Código:
+<app-child (customEvent)="handleEvent($event)"></app-child>
+Uso:
+Local: src/app/<pagina>.html e componente filho.
+
+
+Avançado
+Usar rxjs Subjects para tratar eventos globais.
+Código:
+eventSubject = new Subject<string>();
+this.eventSubject.subscribe(data => console.log(data));
+Uso:
+Local: src/app/<servico>.ts e componentes relacionados.
+
+
+6. Como apresentar valores em tela
+Básico
+Usar interpolação para exibir valores.
+Código:
+<p>{{ mensagem }}</p>
+Uso:
+Local: src/app/<pagina>.html
+
+
+Médio
+Apresentar listas com *ngFor.
+Código:
+<ul>
+  <li *ngFor="let item of items">{{ item }}</li>
+</ul>
+Uso:
+Local: src/app/<pagina>.html
+
+
+Avançado
+Usar pipes para formatar dados.
+Código:
+<p>{{ preco | currency:'BRL' }}</p>
+Uso:
+Local: src/app/<pagina>.html
+
+
+7. Como coletar dados de formulários
+Básico
+Usar ngModel para capturar dados.
+Código:
+<input [(ngModel)]="nome" />
+Uso:
+Local: src/app/<pagina>.html
+
+
+Médio
+Usar formulários reativos.
+Código:
+this.form = this.fb.group({
+  nome: ['', Validators.required]
+});
+Uso:
+Local: src/app/<pagina>.ts
+
+
+Avançado
+Validar formulários dinamicamente com erros customizados.
+Código:
+Validators.compose([this.customValidator()])
+Uso:
+Local: src/app/<pagina>.ts
+
+
+8. Como gerar notificações utilizando Ionic no Angular
+Básico
+Usar ion-toast para exibir mensagens.
+Código:
+const toast = await this.toastController.create({
+  message: 'Mensagem enviada!',
+  duration: 2000
+});
+toast.present();
+Uso:
+Local: src/app/<pagina>.ts
+
+
+Médio
+Usar alertas personalizados com ion-alert.
+Código:
+const alert = await this.alertController.create({
+  header: 'Atenção!',
+  message: 'Confirma a ação?',
+  buttons: ['Cancelar', 'OK']
+});
+alert.present();
+Uso:
+Local: src/app/<pagina>.ts
+
+
+Avançado
+Implementar notificações push com Firebase.
+Código:
+this.fcm.onNotification().subscribe(data => {
+  console.log(data);
+});
+Uso:
+Local: src/app/<servico>.ts e configuração Firebase.
